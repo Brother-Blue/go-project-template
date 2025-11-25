@@ -48,10 +48,6 @@ func init() {
 		)
 		os.Exit(1)
 	}
-	slog.Info(
-		"Loaded config file.",
-		"path", viper.GetViper().ConfigFileUsed(),
-	)
 
 	if viper.GetBool("developer_mode.enabled") {
 		slog.Info("Developer mode enabled, using project's `config.yaml` and attempting to read in a .env file.")
@@ -61,6 +57,11 @@ func init() {
 			slog.Info("Successfully read in .env file.")
 		}
 	}
+
+	slog.Info(
+		"Loaded config file.",
+		"config_path", viper.GetViper().ConfigFileUsed(),
+	)
 
 	// Telemetry
 	if viper.GetBool("config.telemetry.enabled") {
