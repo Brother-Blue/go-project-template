@@ -1,0 +1,5 @@
+.env
+
+# Initialize your own go.mod and run `go mod tidy`
+go.mod
+go.sum

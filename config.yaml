@@ -1,0 +1,25 @@
+# This section is used for telemetry information
+service:
+  name: campaign-manager
+
+# This section is used for configuring the service
+config:
+  # If changing `hot_reload` a service restart is required
+  hot_reload: true
+  # If enabled, will generate telemetry, can be viewed using tools such as Grafana LGTM https://grafana.com/docs/opentelemetry/docker-lgtm/
+  telemetry:
+    enabled: true
+    otlp_protocol: http/protobuf
+    otlp_endpoint: http://localhost:4318
+    otlp_insecure: true
+
+# This section is for configuring the HTTP server
+server:
+  tls:
+    enabled: true
+    cert_file: server.crt
+    key_file: server.key
+
+# Developer mode section
+developer_mode:
+  enabled: true
