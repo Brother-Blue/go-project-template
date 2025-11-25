@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/log/global"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 		tracerProvider := telemetry.NewTracerProvider(ctx)
 		meterProvider := telemetry.NewMeterProvider(ctx)
 		loggerProvider := telemetry.NewLoggerProvider(ctx)
+		global.SetLoggerProvider(loggerProvider)
 
 		if tracerProvider == nil || meterProvider == nil || loggerProvider == nil {
 			slog.Error("Failed to initialize all telemetry providers. Please see previous errors for potential causes.")
@@ -37,5 +39,7 @@ func main() {
 		slog.SetDefault(logger)
 	}
 
-	server.NewServer(ctx)
+	if err := server.Start(ctx); err != nil {
+		slog.Error("Error received from server.", "error", err)
+	}
 }
