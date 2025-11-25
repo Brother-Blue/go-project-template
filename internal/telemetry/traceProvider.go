@@ -6,12 +6,14 @@ import (
 
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/trace"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
-func NewTracerProvider(ctx context.Context) (provider *sdktrace.TracerProvider) {
+func NewTracerProvider(ctx context.Context, mode TelemetryMode) (provider *sdktrace.TracerProvider) {
 	res, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
@@ -24,7 +26,11 @@ func NewTracerProvider(ctx context.Context) (provider *sdktrace.TracerProvider) 
 		return nil
 	}
 
-	exporter, err := otlptracegrpc.New(ctx)
+	var exporter trace.SpanExporter
+	exporter, err = otlptracegrpc.New(ctx)
+	if mode == HTTP {
+		exporter, err = otlptracehttp.New(ctx)
+	}
 	if err != nil {
 		slog.Error("Failed to create OTLP exporter.")
 		return nil

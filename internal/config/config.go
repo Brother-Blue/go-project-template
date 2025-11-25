@@ -36,9 +36,9 @@ func init() {
 		if errors.As(err, &configNotFoundError) {
 			slog.Error(
 				"Config file could not be found at any of the specified paths.",
-				"dev_path", "`.` - Only when the `CM__DEV=1` environment variable is set",
-				"home_path", "$HOME/.campaign_manager - The default path used",
-				"etc_path", "/etc/campaign_manager - The alternative path used (least precedence)",
+				"dev_path", "`.` - Only when the `developer_mode` config is enabled.",
+				"home_path", "$HOME/.campaign_manager - The default path used.",
+				"etc_path", "/etc/campaign_manager - The alternative path used (least precedence).",
 			)
 			os.Exit(1)
 		}
@@ -54,9 +54,7 @@ func init() {
 	)
 
 	if viper.GetBool("developer_mode.enabled") {
-		slog.Debug("Developer mode enabled, using project's `config.yaml`, enabling debug level logging, and attempting to read in a .env file.")
-		slog.SetLogLoggerLevel(slog.LevelDebug)
-
+		slog.Info("Developer mode enabled, using project's `config.yaml` and attempting to read in a .env file.")
 		if err := godotenv.Load(); err != nil {
 			slog.Warn("Failed loading in .env files. If you did not include any you can safely ignore this warning.")
 		} else {
@@ -73,18 +71,10 @@ func init() {
 
 		slog.Info(
 			"Telemetry has been configured.",
-			"service-name", viper.GetString("service.name"),
-			"otlp-endpoint", os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
-			"otlp-protocol", os.Getenv("OTEL_EXPORTER_OTLP_PROTOCOL"),
-		)
-
-		slog.Info("Telemetry configuration enabled, configuring OTLP log exporter.")
-
-		slog.Debug(
-			"Telemetry has been configured.",
-			"service-name", viper.GetString("service.name"),
-			"otlp-endpoint", os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
-			"otlp-protocol", os.Getenv("OTLP_EXPORTER_OTLP_PROTOCOL"),
+			"service_name", viper.GetString("service.name"),
+			"otlp_endpoint", os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
+			"otlp_protocol", os.Getenv("OTEL_EXPORTER_OTLP_PROTOCOL"),
+			"provider_protocol", viper.GetString("config.telemetry.mode"),
 		)
 	}
 

@@ -11,7 +11,9 @@ config:
     enabled: true
     otlp_protocol: http/protobuf
     # :4317 for gRPC. :4318 for HTTP
-    otlp_endpoint: http://localhost:4317
+    otlp_endpoint: http://localhost:4318
+    # [grpc, http] This is used for configuring the providers in the event you're using an external APM tool
+    mode: http
     otlp_insecure: true
 
 # This section is for configuring the HTTP server

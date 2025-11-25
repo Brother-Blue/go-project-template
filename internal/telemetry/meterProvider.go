@@ -6,12 +6,13 @@ import (
 
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
-func NewMeterProvider(ctx context.Context) (metricProvider *metric.MeterProvider) {
+func NewMeterProvider(ctx context.Context, mode TelemetryMode) (metricProvider *metric.MeterProvider) {
 	res, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
@@ -24,7 +25,11 @@ func NewMeterProvider(ctx context.Context) (metricProvider *metric.MeterProvider
 		return nil
 	}
 
-	metricExporter, err := otlpmetricgrpc.New(ctx)
+	var exporter metric.Exporter
+	exporter, err = otlpmetricgrpc.New(ctx)
+	if mode == HTTP {
+		exporter, err = otlpmetrichttp.New(ctx)
+	}
 	if err != nil {
 		slog.Error("Failed to initialize metrics exporter.", "error", err)
 		return nil
@@ -32,7 +37,7 @@ func NewMeterProvider(ctx context.Context) (metricProvider *metric.MeterProvider
 
 	metricProvider = metric.NewMeterProvider(
 		metric.WithResource(res),
-		metric.WithReader(metric.NewPeriodicReader(metricExporter)),
+		metric.WithReader(metric.NewPeriodicReader(exporter)),
 	)
 	slog.Info("Successfully initialized the metrics provider.")
 	return metricProvider
