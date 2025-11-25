@@ -10,7 +10,8 @@ config:
   telemetry:
     enabled: true
     otlp_protocol: http/protobuf
-    otlp_endpoint: http://localhost:4318
+    # :4317 for gRPC. :4318 for HTTP
+    otlp_endpoint: http://localhost:4317
     otlp_insecure: true
 
 # This section is for configuring the HTTP server

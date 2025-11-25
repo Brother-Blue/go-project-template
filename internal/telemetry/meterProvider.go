@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/spf13/viper"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
@@ -24,7 +24,7 @@ func NewMeterProvider(ctx context.Context) (metricProvider *metric.MeterProvider
 		return nil
 	}
 
-	metricExporter, err := otlpmetrichttp.New(ctx)
+	metricExporter, err := otlpmetricgrpc.New(ctx)
 	if err != nil {
 		slog.Error("Failed to initialize metrics exporter.", "error", err)
 		return nil
