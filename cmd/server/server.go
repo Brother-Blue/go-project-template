@@ -12,7 +12,7 @@ import (
 
 func Start(ctx context.Context) (err error) {
 	if viper.GetBool("server.tls.enabled") {
-		slog.Debug("TLS enabled, loading certificates...")
+		slog.InfoContext(ctx, "TLS enabled, loading certificates...")
 	}
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
